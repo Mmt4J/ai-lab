@@ -16,6 +16,14 @@
                         {{ __('Dashboard') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
+                <flux:navlist.group heading="AI Lab">
+                <flux:navlist.item icon="document-text" :href="route('labs.summarizer')" :current="request()->routeIs('labs.summarizer')" wire:navigate>Summarizer</flux:navlist.item>
+                <flux:navlist.item icon="inbox" :href="route('labs.tickets')" :current="request()->routeIs('labs.tickets')" wire:navigate>Tickets</flux:navlist.item>
+                <flux:navlist.item icon="shopping-cart" :href="route('labs.product')" :current="request()->routeIs('labs.product')" wire:navigate>Product</flux:navlist.item>
+                <flux:navlist.item icon="question-mark-circle" :href="route('labs.faq')" :current="request()->routeIs('labs.faq')" wire:navigate>FAQ</flux:navlist.item>
+                <flux:navlist.item icon="receipt-percent" :href="route('labs.receipt')" :current="request()->routeIs('labs.receipt')" wire:navigate>Receipt</flux:navlist.item>
+                <flux:navlist.item icon="star" :href="route('labs.reviews')" :current="request()->routeIs('labs.reviews')" wire:navigate>Reviews</flux:navlist.item>
+            </flux:navlist.group>
             </flux:sidebar.nav>
 
             <flux:spacer />
