@@ -1,6 +1,7 @@
 <?php
 
 use Livewire\Component;
+use App\Ai\Agents\ProductDescriptionGenerator;
 
 new class extends Component {
     public string $name = '';
@@ -10,12 +11,10 @@ new class extends Component {
 
     public function generateDescription(): void
     {
-        $this->description = app(\App\Services\Ai::class)->generateProductDescription($this->name, $this->keywords, $this->tone) ?: 'No description generated. Please try again.';
-    }
-
-    public function generateProductDescription($name, $keywords, $tone)
-    {
-        return null; // Temporary placeholder
+        $agent = new ProductDescriptionGenerator();
+        $prompt = "Generate a product description for:\n\nProduct: {$this->name}\nKeywords: {$this->keywords}\nTone: {$this->tone}";
+        $response = $agent->prompt($prompt);
+        $this->description = $response->text ?: 'No description generated. Please try again.';
     }
 };
 ?>
@@ -44,9 +43,6 @@ new class extends Component {
 
         <flux:input wire:model="keywords" label="Keywords"
             placeholder="e.g. premium, durable, handmade, durable, Lagos, colourful" />
-
-        {{-- <flux:textarea wire:model="description" label="Generated Description" rows="7"
-            placeholder="Your product description will appear here..." /> --}}
 
         <flux:button type="submit" variant="primary">
             Generate Description

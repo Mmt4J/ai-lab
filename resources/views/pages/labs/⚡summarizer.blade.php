@@ -2,9 +2,9 @@
 
 use Livewire\Component;
 use Livewire\Attributes\Validate;
+use App\Ai\Agents\Summarizer;
 
 new class extends Component {
-    //
     #[Validate('required|min:50')]
     public string $text = '';
     public array $bullets = [];
@@ -13,7 +13,8 @@ new class extends Component {
     {
         $this->validate();
 
-        $this->bullets = app(\App\Services\Ai::class)->summarize($this->text);
+        $response = new Summarizer()->prompt($this->text);
+        $this->bullets = array_filter(array_map('trim', explode("\n", $response->text)), fn($line) => $line !== '');
     }
 };
 ?>
