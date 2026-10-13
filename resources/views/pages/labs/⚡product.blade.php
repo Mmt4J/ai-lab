@@ -23,6 +23,10 @@ new class extends Component {
     <flux:heading size="xl">
         Product Description Generator
     </flux:heading>
+    <flux:text class="text-sm text-muted">
+        Generate compelling product descriptions with ease. Enter the product name, select a tone, and provide relevant
+        keywords to create engaging content that resonates with your audience.
+    </flux:text>
 
     <form wire:submit="generateDescription" class="space-y-3">
         <flux:input wire:model="name" label="Product Name" placeholder="Product name..." required />

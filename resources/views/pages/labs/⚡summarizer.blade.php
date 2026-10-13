@@ -21,6 +21,10 @@ new class extends Component {
 
 <div class="max-w-2xl space-y-4">
     <flux:heading size="xl">Text summarizer</flux:heading>
+    <flux:text class="text-sm text-muted">
+        Summarize long text into concise bullet points. Paste your text below and click "Summarize" to generate a clear
+        summary of the key points.
+    </flux:text>
 
     <form wire:submit="summarize" class="space-y-3">
         <flux:textarea wire:model="text" rows="7" placeholder="Paste long text..." />
