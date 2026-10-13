@@ -8,8 +8,8 @@ use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Enums\Lab;
 use Laravel\Ai\Promptable;
 
-#[Provider(Lab::DeepSeek)]
-#[Model('deepseek-chat')]
+#[Provider(Lab::Groq)]
+#[Model('openai/gpt-oss-120b')]
 class ProductDescriptionGenerator implements Agent
 {
     use Promptable;

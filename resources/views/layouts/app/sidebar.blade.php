@@ -26,11 +26,12 @@
                 <flux:navlist.item icon="inbox" :href="route('labs.tickets')"
                     :current="request()->routeIs('labs.tickets')" wire:navigate>Tickets</flux:navlist.item>
                 <flux:navlist.item icon="shopping-cart" :href="route('labs.product')"
-                    :current="request()->routeIs('labs.product')" wire:navigate>Product-Writer</flux:navlist.item>
+                    :current="request()->routeIs('labs.product')" wire:navigate>Description Generator
+                </flux:navlist.item>
                 <flux:navlist.item icon="question-mark-circle" :href="route('labs.faq')"
                     :current="request()->routeIs('labs.faq')" wire:navigate>FAQ</flux:navlist.item>
                 <flux:navlist.item icon="receipt-percent" :href="route('labs.receipt')"
-                    :current="request()->routeIs('labs.receipt')" wire:navigate>Receipt</flux:navlist.item>
+                    :current="request()->routeIs('labs.receipt')" wire:navigate>Receipt Reader</flux:navlist.item>
                 <flux:navlist.item icon="star" :href="route('labs.reviews')"
                     :current="request()->routeIs('labs.reviews')" wire:navigate>Reviews</flux:navlist.item>
             </flux:navlist.group>
@@ -104,6 +105,24 @@
             <flux:toast />
         </flux:toast.group>
     @endpersist
+
+    {{-- Flash error messages (from exceptions) --}}
+    @if (session('error'))
+        <flux:toast.group>
+            <flux:toast variant="danger" :dismissible="true" :persist="true">
+                {{ session('error') }}
+            </flux:toast>
+        </flux:toast.group>
+    @endif
+
+    {{-- Flash success messages --}}
+    @if (session('success'))
+        <flux:toast.group>
+            <flux:toast variant="success" :dismissible="true">
+                {{ session('success') }}
+            </flux:toast>
+        </flux:toast.group>
+    @endif
 
     @fluxScripts
 </body>
