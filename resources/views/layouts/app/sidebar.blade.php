@@ -14,12 +14,12 @@
         </flux:sidebar.header>
 
         <flux:sidebar.nav>
-            <flux:sidebar.group :heading="__('Platform')" class="grid">
+            {{-- <flux:sidebar.group :heading="__('Platform')" class="grid">
                 <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
                     wire:navigate>
                     {{ __('Dashboard') }}
                 </flux:sidebar.item>
-            </flux:sidebar.group>
+            </flux:sidebar.group> --}}
             <flux:navlist.group heading="AI Lab">
                 <flux:navlist.item icon="document-text" :href="route('labs.summarizer')"
                     :current="request()->routeIs('labs.summarizer')" wire:navigate>Summarizer</flux:navlist.item>
