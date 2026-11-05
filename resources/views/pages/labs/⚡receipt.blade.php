@@ -63,17 +63,18 @@ new class extends Component {
 };
 ?>
 
-<div class="max-w-3xl space-y-6">
-    {{-- Page header --}}
-    <flux:heading size="xl">Transaction Receipt Validator</flux:heading>
+<div class="mx-auto w-full max-w-3xl space-y-6">
+    {{-- Shared page intro, matching the other labs. --}}
+    <x-lab-header title="Transaction receipt validator"
+        description="Upload a photo of a bank receipt or invoice and see the transaction fields the AI finds." />
 
     {{-- Main card container --}}
-    <flux:card class="space-y-4">
+    <flux:card class="space-y-4 border-line! bg-card!">
         {{-- Upload section header --}}
         <div class="space-y-3">
-            <flux:heading size="lg">Upload Transaction Receipt</flux:heading>
-            <p class="text-sm text-zinc-500">Upload a bank transaction receipt (transfer, airtime, bill payment, POS,
-                withdrawal). JPG, PNG, max 10MB</p>
+            <flux:heading size="lg" class="font-display">Upload transaction receipt</flux:heading>
+            <p class="text-sm text-muted">Upload a bank transaction receipt (transfer, airtime, bill payment, POS,
+                withdrawal). JPG or PNG, max 10MB.</p>
         </div>
 
         {{-- Show preview + actions when image is uploaded --}}
@@ -81,28 +82,21 @@ new class extends Component {
             <div class="space-y-3">
                 {{-- Image preview box with loading state --}}
                 <div
-                    class="relative aspect-[4/3] rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800">
+                    class="relative aspect-[4/3] overflow-hidden rounded-lg border border-line bg-paper dark:bg-white/5">
                     {{-- wire:loading.attr="hidden" hides image while loading --}}
                     <img wire:loading.attr="hidden" src="{{ $receiptImage->temporaryUrl() }}" alt="Receipt preview"
-                        class="w-full h-full object-cover" />
+                        class="h-full w-full object-cover" />
                 </div>
 
-                {{-- Action buttons: Validate (primary) and Clear (ghost) --}}
+                {{-- Action buttons: Validate (primary green) and Clear (ghost) --}}
                 <div class="flex gap-3">
                     <flux:button wire:click="processReceipt" :disabled="$processing" variant="primary" class="flex-1">
-                        {{-- Show spinner + "Validating..." when processing --}}
+                        {{-- Flux ships an animated loading icon, so no custom SVG is needed. --}}
                         @if ($processing)
-                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                    stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                </path>
-                            </svg>
-                            Validating...
+                            <flux:icon.arrow-path variant="micro" class="animate-spin" />
+                            Validating&hellip;
                         @else
-                            Validate Transaction
+                            Validate transaction
                         @endif
                     </flux:button>
 
@@ -112,40 +106,39 @@ new class extends Component {
                 </div>
             </div>
         @else
-            {{-- Dropzone for drag & drop / click to upload --}}
-            {{-- wire:dropzone binds file drops to $receiptImage property --}}
+            {{-- Dropzone for drag & drop / click to upload. --}}
+            {{-- wire:dropzone binds file drops to $receiptImage property. --}}
             <div wire:dropzone="receiptImage"
-                class="relative border-2 border-dashed border-zinc-300 dark:border-zinc-600 rounded-lg p-8 text-center hover:border-primary-500 transition-colors cursor-pointer">
-                <flux:icon name="cloud-arrow-up" class="mx-auto h-12 w-12 text-zinc-400" />
-                <p class="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
-                    Drag & drop a receipt image, or click to browse
+                class="relative cursor-pointer rounded-lg border-2 border-dashed border-line p-8 text-center transition-colors hover:border-brand-400 hover:bg-brand-50/40 dark:hover:border-brand-600 dark:hover:bg-brand-950/30">
+                <flux:icon name="cloud-arrow-up" class="mx-auto h-12 w-12 text-brand-600 dark:text-brand-400" />
+                <p class="mt-3 text-sm text-muted">
+                    Drag &amp; drop a receipt image, or click to browse
                 </p>
-                {{-- Hidden file input bound to Livewire property --}}
+                {{-- Hidden file input bound to the Livewire property. --}}
                 <input type="file" wire:model="receiptImage" accept="image/*" class="hidden" id="receipt-upload" />
-                {{-- Label makes entire dropzone clickable to trigger file input --}}
+                {{-- Label makes the entire dropzone clickable. --}}
                 <label for="receipt-upload" class="absolute inset-0 cursor-pointer" />
             </div>
         @endif
 
         {{-- Error display card (red) --}}
         @if ($error)
-            <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-                <flux:icon name="exclamation-triangle" class="h-5 w-5 text-red-500" />
+            <div class="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
+                <flux:icon name="exclamation-triangle" class="h-5 w-5 shrink-0 text-red-500" />
                 <p class="text-sm text-red-700 dark:text-red-300">{{ $error }}</p>
             </div>
         @endif
 
         {{-- Results display section --}}
         @if ($result)
-            <div class="space-y-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+            <div class="space-y-4 border-t border-line pt-4">
                 {{-- Header with title and Copy JSON button --}}
                 <div class="flex items-center justify-between">
-                    <flux:heading size="lg">Validation Result</flux:heading>
-                    <button type="button"
-                        @click="navigator.clipboard.writeText(JSON.stringify(@json($result), null, 2))"
-                        class="text-xs border border-zinc-300 dark:border-zinc-600 rounded-md px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                    <flux:heading size="lg" class="font-display">Validation result</flux:heading>
+                    <flux:button type="button" variant="ghost" size="sm" icon="clipboard"
+                        x-on:click="navigator.clipboard.writeText(JSON.stringify(@js($result), null, 2))">
                         Copy JSON
-                    </button>
+                    </flux:button>
                 </div>
 
                 {{-- Status badge with color coding --}}
@@ -174,76 +167,74 @@ new class extends Component {
                 {{-- Core transaction details grid --}}
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     <div>
-                        <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Amount</flux:text>
-                        <p class="font-bold text-lg text-zinc-900 dark:text-zinc-100">
+                        <flux:text class="text-xs text-muted">Amount</flux:text>
+                        <p class="text-lg font-bold text-ink dark:text-white">
                             {{ number_format($result['amount'] ?? 0, 2) }} {{ $result['currency'] ?? 'NGN' }}
                         </p>
                     </div>
                     <div>
-                        <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Fee</flux:text>
+                        <flux:text class="text-xs text-muted">Fee</flux:text>
                         <p class="font-medium">
                             {{ isset($result['fee']) ? number_format($result['fee'], 2) . ' ' . ($result['currency'] ?? 'NGN') : 'N/A' }}
                         </p>
                     </div>
                     <div>
-                        <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Stamp Duty</flux:text>
+                        <flux:text class="text-xs text-muted">Stamp duty</flux:text>
                         <p class="font-medium">
                             {{ isset($result['stamp_duty']) ? number_format($result['stamp_duty'], 2) . ' ' . ($result['currency'] ?? 'NGN') : 'N/A' }}
                         </p>
                     </div>
                     <div>
-                        <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Date</flux:text>
+                        <flux:text class="text-xs text-muted">Date</flux:text>
                         <p class="font-medium">{{ $result['transaction_date'] ?? 'N/A' }}</p>
                     </div>
                     <div>
-                        <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Time</flux:text>
+                        <flux:text class="text-xs text-muted">Time</flux:text>
                         <p class="font-medium">{{ $result['transaction_time'] ?? 'N/A' }}</p>
                     </div>
                     <div>
-                        <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Currency</flux:text>
+                        <flux:text class="text-xs text-muted">Currency</flux:text>
                         <p class="font-medium">{{ $result['currency'] ?? 'NGN' }}</p>
                     </div>
                 </div>
 
-                {{-- Sender (debiting party) section - grey background --}}
+                {{-- Sender (debiting party) section - muted paper background --}}
                 @if (!empty($result['sender_name']) || !empty($result['sender_account']) || !empty($result['sender_bank']))
-                    <div class="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg">
-                        <flux:heading size="sm" class="text-zinc-700 dark:text-zinc-300">Sender (Debited)
-                        </flux:heading>
+                    <div class="rounded-lg bg-paper p-4 dark:bg-white/5">
+                        <flux:heading size="sm" class="text-ink/75 dark:text-white/80">Sender (debited)</flux:heading>
                         <div class="mt-2 grid gap-2 sm:grid-cols-3">
                             <div>
-                                <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Name</flux:text>
+                                <flux:text class="text-xs text-muted">Name</flux:text>
                                 <p class="font-medium">{{ $result['sender_name'] ?? 'N/A' }}</p>
                             </div>
                             <div>
-                                <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Account</flux:text>
-                                <p class="font-medium font-mono text-sm">{{ $result['sender_account'] ?? 'N/A' }}</p>
+                                <flux:text class="text-xs text-muted">Account</flux:text>
+                                <p class="font-mono text-sm font-medium">{{ $result['sender_account'] ?? 'N/A' }}</p>
                             </div>
                             <div>
-                                <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Bank</flux:text>
+                                <flux:text class="text-xs text-muted">Bank</flux:text>
                                 <p class="font-medium">{{ $result['sender_bank'] ?? 'N/A' }}</p>
                             </div>
                         </div>
                     </div>
                 @endif
 
-                {{-- Recipient (crediting party) section - green background --}}
+                {{-- Recipient (crediting party) section - green brand tint --}}
                 @if (!empty($result['recipient_name']) || !empty($result['recipient_account']) || !empty($result['recipient_bank']))
-                    <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                        <flux:heading size="sm" class="text-green-700 dark:text-green-300">Recipient (Credited)
-                        </flux:heading>
+                    <div class="rounded-lg bg-brand-50 p-4 dark:bg-brand-950/40">
+                        <flux:heading size="sm" class="text-brand-800 dark:text-brand-200">Recipient (credited)</flux:heading>
                         <div class="mt-2 grid gap-2 sm:grid-cols-3">
                             <div>
-                                <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Name</flux:text>
+                                <flux:text class="text-xs text-muted">Name</flux:text>
                                 <p class="font-medium">{{ $result['recipient_name'] ?? 'N/A' }}</p>
                             </div>
                             <div>
-                                <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Account</flux:text>
-                                <p class="font-medium font-mono text-sm">{{ $result['recipient_account'] ?? 'N/A' }}
+                                <flux:text class="text-xs text-muted">Account</flux:text>
+                                <p class="font-mono text-sm font-medium">{{ $result['recipient_account'] ?? 'N/A' }}
                                 </p>
                             </div>
                             <div>
-                                <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Bank</flux:text>
+                                <flux:text class="text-xs text-muted">Bank</flux:text>
                                 <p class="font-medium">{{ $result['recipient_bank'] ?? 'N/A' }}</p>
                             </div>
                         </div>
@@ -254,20 +245,20 @@ new class extends Component {
                 <div class="grid gap-4 sm:grid-cols-2">
                     @if (!empty($result['narration']))
                         <div class="col-span-2">
-                            <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Narration</flux:text>
+                            <flux:text class="text-xs text-muted">Narration</flux:text>
                             <p class="font-medium">{{ $result['narration'] }}</p>
                         </div>
                     @endif
                     @if (!empty($result['reference']))
                         <div>
-                            <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Reference</flux:text>
-                            <p class="font-medium font-mono text-sm">{{ $result['reference'] }}</p>
+                            <flux:text class="text-xs text-muted">Reference</flux:text>
+                            <p class="font-mono text-sm font-medium">{{ $result['reference'] }}</p>
                         </div>
                     @endif
                     @if (!empty($result['session_id']))
                         <div>
-                            <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">NIP Session ID</flux:text>
-                            <p class="font-medium font-mono text-sm">{{ $result['session_id'] }}</p>
+                            <flux:text class="text-xs text-muted">NIP session ID</flux:text>
+                            <p class="font-mono text-sm font-medium">{{ $result['session_id'] }}</p>
                         </div>
                     @endif
                 </div>
@@ -276,17 +267,17 @@ new class extends Component {
     </flux:card>
 
     {{-- Info card listing supported receipt types --}}
-    <flux:card>
-        <flux:heading size="sm">Supported Receipt Types</flux:heading>
-        <ul class="mt-3 text-sm text-zinc-600 dark:text-zinc-400 space-y-2 list-disc list-inside">
+    <flux:card class="border-line! bg-card!">
+        <flux:heading size="sm" class="font-display">Supported receipt types</flux:heading>
+        <ul class="mt-3 list-inside list-disc space-y-2 text-sm text-muted">
             <li>Bank transfers (inter-bank, intra-bank, NIP)</li>
-            <li>Airtime & data purchases</li>
+            <li>Airtime &amp; data purchases</li>
             <li>Bill payments (electricity, TV, internet, etc.)</li>
             <li>POS transactions</li>
-            <li>ATM withdrawals & deposits</li>
-            <li>USSD & mobile banking receipts</li>
+            <li>ATM withdrawals &amp; deposits</li>
+            <li>USSD &amp; mobile banking receipts</li>
         </ul>
-        <p class="mt-3 text-xs text-zinc-500">Optimized for Nigerian banking receipts (GTBank, Access, Zenith, UBA,
+        <p class="mt-3 text-xs text-muted">Optimized for Nigerian banking receipts (GTBank, Access, Zenith, UBA,
             FirstBank, Opay, Palmpay, Kuda, etc.)</p>
     </flux:card>
 </div>

@@ -156,51 +156,47 @@ new class extends Component {
 };
 ?>
 
-<div class="space-y-6">
-    <div class="space-y-1">
-        <flux:heading size="xl">Review Sentiment Tagger</flux:heading>
-        <flux:text class="text-sm text-muted">
-            Add a customer review and the AI will label it positive, neutral, or negative. The counts update as reviews
-            are tagged, giving a quick snapshot of customer sentiment.
-        </flux:text>
-    </div>
+<div class="mx-auto w-full max-w-6xl space-y-6">
+    {{-- Shared page intro. --}}
+    <x-lab-header title="Review Sentiment Tagger"
+        description="Add a customer review and the AI will label it positive, neutral, or negative. The counts update as reviews are tagged, giving a quick snapshot of customer sentiment." />
 
-    {{-- Sentiment counts --}}
+    {{-- Sentiment counts. Each card keeps its data-test hook for the feature tests. --}}
     <div class="grid grid-cols-2 gap-4 lg:grid-cols-5" data-test="review-stats">
-        <flux:card class="p-4">
-            <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Total reviews</flux:text>
-            <p class="mt-1 text-2xl font-semibold" data-test="stat-total">{{ $this->stats['total'] }}</p>
+        <flux:card class="border-line! bg-card! p-4">
+            <flux:text class="text-xs text-muted">Total reviews</flux:text>
+            <p class="mt-1 font-display text-2xl font-semibold text-brand-700 dark:text-brand-300" data-test="stat-total">{{ $this->stats['total'] }}</p>
         </flux:card>
-        <flux:card class="p-4">
-            <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Positive</flux:text>
-            <p class="mt-1 text-2xl font-semibold text-green-600 dark:text-green-400" data-test="stat-positive">
+        <flux:card class="border-line! bg-card! p-4">
+            <flux:text class="text-xs text-muted">Positive</flux:text>
+            <p class="mt-1 font-display text-2xl font-semibold text-emerald-600 dark:text-emerald-400" data-test="stat-positive">
                 {{ $this->stats['positive'] }}
             </p>
         </flux:card>
-        <flux:card class="p-4">
-            <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Neutral</flux:text>
-            <p class="mt-1 text-2xl font-semibold text-zinc-600 dark:text-zinc-300" data-test="stat-neutral">
+        <flux:card class="border-line! bg-card! p-4">
+            <flux:text class="text-xs text-muted">Neutral</flux:text>
+            <p class="mt-1 font-display text-2xl font-semibold text-ink/65 dark:text-white/65" data-test="stat-neutral">
                 {{ $this->stats['neutral'] }}
             </p>
         </flux:card>
-        <flux:card class="p-4">
-            <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Negative</flux:text>
-            <p class="mt-1 text-2xl font-semibold text-red-600 dark:text-red-400" data-test="stat-negative">
+        <flux:card class="border-line! bg-card! p-4">
+            <flux:text class="text-xs text-muted">Negative</flux:text>
+            <p class="mt-1 font-display text-2xl font-semibold text-red-600 dark:text-red-400" data-test="stat-negative">
                 {{ $this->stats['negative'] }}
             </p>
         </flux:card>
-        <flux:card class="p-4">
-            <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Untagged</flux:text>
-            <p class="mt-1 text-2xl font-semibold text-amber-600 dark:text-amber-400" data-test="stat-unclassified">
+        <flux:card class="border-line! bg-card! p-4">
+            <flux:text class="text-xs text-muted">Untagged</flux:text>
+            <p class="mt-1 font-display text-2xl font-semibold text-amber-600 dark:text-amber-400" data-test="stat-unclassified">
                 {{ $this->stats['unclassified'] }}
             </p>
         </flux:card>
     </div>
 
     {{-- Add a review --}}
-    <flux:card class="space-y-4">
+    <flux:card class="space-y-4 border-line! bg-card!">
         <div class="space-y-1">
-            <flux:heading size="lg">Add a customer review</flux:heading>
+            <flux:heading size="lg" class="font-display">Add a customer review</flux:heading>
             <flux:text class="text-sm text-muted">
                 The review is saved first, then sent to the AI for sentiment tagging.
             </flux:text>
@@ -214,7 +210,8 @@ new class extends Component {
                 placeholder="e.g. The delivery was quick and the product quality exceeded my expectations." />
 
             <div class="flex flex-wrap gap-3">
-                <flux:button type="submit" variant="filled" color="blue" :disabled="$processing">
+                {{-- Primary (green) submit button, with an inline spinner while tagging. --}}
+                <flux:button type="submit" variant="primary" :disabled="$processing">
                     @if ($processing)
                         <flux:icon.arrow-path variant="micro" class="animate-spin" />
                         Tagging review...
@@ -237,12 +234,14 @@ new class extends Component {
     </flux:card>
 
     {{-- Review list --}}
-    <flux:card>
+    <flux:card class="border-line! bg-card!">
         @if ($this->reviews->count() === 0)
             <div class="flex flex-col items-center justify-center gap-3 py-12 text-center">
-                <flux:icon.star class="size-10 text-zinc-400" />
-                <p class="text-sm font-medium text-zinc-700 dark:text-zinc-300">No reviews yet.</p>
-                <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">
+                <span class="flex size-14 items-center justify-center rounded-full bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-300">
+                    <flux:icon.star class="size-7" />
+                </span>
+                <p class="text-sm font-medium text-ink/75 dark:text-white/75">No reviews yet.</p>
+                <flux:text class="text-sm text-muted">
                     Add your first customer review above to start tracking sentiment.
                 </flux:text>
             </div>

@@ -369,39 +369,41 @@ new class extends Component {
 ?>
 
 <div class="space-y-6" @if ($stats['pending'] > 0) wire:poll.5s="refreshStatistics" @endif>
-    {{-- Dashboard statistics --}}
+    {{-- Dashboard statistics. Total uses the brand colour; open stays green
+         and high urgency stays red so the important number is obvious. --}}
     <div class="grid grid-cols-2 gap-4 lg:grid-cols-5" data-test="ticket-stats">
-        <flux:card class="p-4">
-            <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Total tickets</flux:text>
-            <p class="mt-1 text-2xl font-semibold" data-test="stat-total">{{ $stats['total'] }}</p>
+        <flux:card class="border-line! bg-card! p-4">
+            <flux:text class="text-xs text-muted">Total tickets</flux:text>
+            <p class="mt-1 font-display text-2xl font-semibold text-brand-700 dark:text-brand-300" data-test="stat-total">{{ $stats['total'] }}</p>
         </flux:card>
-        <flux:card class="p-4">
-            <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Open</flux:text>
-            <p class="mt-1 text-2xl font-semibold text-green-600 dark:text-green-400" data-test="stat-open">{{ $stats['open'] }}</p>
+        <flux:card class="border-line! bg-card! p-4">
+            <flux:text class="text-xs text-muted">Open</flux:text>
+            <p class="mt-1 font-display text-2xl font-semibold text-emerald-600 dark:text-emerald-400" data-test="stat-open">{{ $stats['open'] }}</p>
         </flux:card>
-        <flux:card class="p-4">
-            <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Closed</flux:text>
-            <p class="mt-1 text-2xl font-semibold text-zinc-500 dark:text-zinc-400" data-test="stat-closed">{{ $stats['closed'] }}</p>
+        <flux:card class="border-line! bg-card! p-4">
+            <flux:text class="text-xs text-muted">Closed</flux:text>
+            <p class="mt-1 font-display text-2xl font-semibold text-ink/60 dark:text-white/60" data-test="stat-closed">{{ $stats['closed'] }}</p>
         </flux:card>
-        <flux:card class="p-4">
-            <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">High urgency</flux:text>
-            <p class="mt-1 text-2xl font-semibold text-red-600 dark:text-red-400" data-test="stat-high-urgency">{{ $stats['high_urgency'] }}</p>
+        <flux:card class="border-line! bg-card! p-4">
+            <flux:text class="text-xs text-muted">High urgency</flux:text>
+            <p class="mt-1 font-display text-2xl font-semibold text-red-600 dark:text-red-400" data-test="stat-high-urgency">{{ $stats['high_urgency'] }}</p>
         </flux:card>
-        <flux:card class="p-4">
-            <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Trashed</flux:text>
-            <p class="mt-1 text-2xl font-semibold text-zinc-500 dark:text-zinc-400" data-test="stat-trashed">{{ $stats['trashed'] }}</p>
+        <flux:card class="border-line! bg-card! p-4">
+            <flux:text class="text-xs text-muted">Trashed</flux:text>
+            <p class="mt-1 font-display text-2xl font-semibold text-ink/60 dark:text-white/60" data-test="stat-trashed">{{ $stats['trashed'] }}</p>
         </flux:card>
     </div>
 
-    <flux:card class="flex flex-wrap items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-        <flux:text class="font-medium text-zinc-700 dark:text-zinc-300">By category:</flux:text>
-        <flux:badge color="cyan">Billing {{ $stats['billing'] }}</flux:badge>
+    {{-- Category totals. Billing uses the brand teal to match the classifier. --}}
+    <flux:card class="flex flex-wrap items-center gap-2 border-line! bg-card! text-sm text-muted">
+        <flux:text class="font-medium text-ink/75 dark:text-white/75">By category:</flux:text>
+        <flux:badge color="teal">Billing {{ $stats['billing'] }}</flux:badge>
         <flux:badge color="amber">Technical {{ $stats['technical'] }}</flux:badge>
         <flux:badge color="red">Complaint {{ $stats['complaint'] }}</flux:badge>
     </flux:card>
 
     {{-- Search and filters --}}
-    <flux:card class="space-y-4">
+    <flux:card class="space-y-4 border-line! bg-card!">
         <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
             <div class="lg:col-span-1">
                 <flux:input wire:model.live.debounce.400ms="search" label="Search"
@@ -432,7 +434,7 @@ new class extends Component {
 
         @if ($this->hasActiveFilters())
             <div class="flex items-center justify-between gap-2">
-                <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">
+                <flux:text class="text-sm text-muted">
                     Filters applied &mdash; {{ $this->tickets->total() }} matching ticket(s).
                 </flux:text>
                 <flux:button wire:click="clearFilters" size="sm" variant="ghost" icon="x-mark">
@@ -443,16 +445,18 @@ new class extends Component {
     </flux:card>
 
     {{-- Ticket table --}}
-    <flux:card>
+    <flux:card class="border-line! bg-card!">
         @if ($this->tickets->count() === 0)
             <div class="flex flex-col items-center justify-center gap-3 py-12 text-center">
-                <flux:icon.inbox class="size-10 text-zinc-400" />
+                <span class="flex size-14 items-center justify-center rounded-full bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-300">
+                    <flux:icon.inbox class="size-7" />
+                </span>
                 @if ($this->hasActiveFilters())
-                    <p class="text-sm font-medium text-zinc-700 dark:text-zinc-300">No tickets match your search or filters.</p>
+                    <p class="text-sm font-medium text-ink/75 dark:text-white/75">No tickets match your search or filters.</p>
                     <flux:button wire:click="clearFilters" size="sm" variant="outline">Clear filters</flux:button>
                 @else
-                    <p class="text-sm font-medium text-zinc-700 dark:text-zinc-300">No tickets yet.</p>
-                    <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">Submit a ticket in the classifier to see it here.</flux:text>
+                    <p class="text-sm font-medium text-ink/75 dark:text-white/75">No tickets yet.</p>
+                    <flux:text class="text-sm text-muted">Submit a ticket in the classifier to see it here.</flux:text>
                 @endif
             </div>
         @else
@@ -471,8 +475,10 @@ new class extends Component {
                 <flux:table.rows>
                     @foreach ($this->tickets as $ticket)
                         @php
+                            // Billing matches the brand; the other categories
+                            // keep their warning colours for quick scanning.
                             $categoryColor = match ($ticket->ticket_category) {
-                                'billing' => 'cyan',
+                                'billing' => 'teal',
                                 'technical' => 'amber',
                                 'complaint' => 'red',
                                 default => null,
@@ -491,7 +497,7 @@ new class extends Component {
                                 <div class="min-w-0">
                                     <p class="truncate font-medium">{{ $ticket->customer_name ?: 'Anonymous' }}</p>
                                     @if ($ticket->company_name)
-                                        <p class="truncate text-xs text-zinc-400 dark:text-zinc-500">{{ $ticket->company_name }}</p>
+                                        <p class="truncate text-xs text-muted">{{ $ticket->company_name }}</p>
                                     @endif
                                 </div>
                             </flux:table.cell>
@@ -506,14 +512,14 @@ new class extends Component {
                                 @elseif ($ticket->hasClassificationFailed())
                                     <flux:badge color="red">Failed</flux:badge>
                                 @else
-                                    <flux:text class="text-xs text-zinc-400 dark:text-zinc-500">Unclassified</flux:text>
+                                    <flux:text class="text-xs text-muted">Unclassified</flux:text>
                                 @endif
                             </flux:table.cell>
                             <flux:table.cell>
                                 @if ($ticket->urgency_level)
                                     <flux:badge :color="$urgencyColor">{{ ucfirst($ticket->urgency_level) }}</flux:badge>
                                 @else
-                                    <flux:text class="text-xs text-zinc-400 dark:text-zinc-500">&mdash;</flux:text>
+                                    <flux:text class="text-xs text-muted">&mdash;</flux:text>
                                 @endif
                             </flux:table.cell>
                             <flux:table.cell>
@@ -596,19 +602,19 @@ new class extends Component {
 
             <div class="space-y-4">
                 {{-- Customer details --}}
-                <div class="rounded-lg bg-zinc-50 p-4 dark:bg-zinc-800/50">
-                    <flux:heading size="sm" class="text-zinc-700 dark:text-zinc-300">Customer details</flux:heading>
+                <div class="rounded-lg bg-paper p-4 dark:bg-white/5">
+                    <flux:heading size="sm" class="text-ink/75 dark:text-white/80">Customer details</flux:heading>
                     <dl class="mt-2 grid gap-2 text-sm sm:grid-cols-2">
                         <div>
-                            <dt class="text-xs text-zinc-500 dark:text-zinc-400">Name</dt>
+                            <dt class="text-xs text-muted">Name</dt>
                             <dd class="font-medium">{{ $viewingTicket->customer_name ?: 'Not provided' }}</dd>
                         </div>
                         <div>
-                            <dt class="text-xs text-zinc-500 dark:text-zinc-400">Company</dt>
+                            <dt class="text-xs text-muted">Company</dt>
                             <dd class="font-medium">{{ $viewingTicket->company_name ?: 'Not provided' }}</dd>
                         </div>
                         <div class="sm:col-span-2">
-                            <dt class="text-xs text-zinc-500 dark:text-zinc-400">Email</dt>
+                            <dt class="text-xs text-muted">Email</dt>
                             <dd class="font-medium">{{ $viewingTicket->email ?: 'Not provided' }}</dd>
                         </div>
                     </dl>
@@ -616,17 +622,17 @@ new class extends Component {
 
                 {{-- Original message --}}
                 <div>
-                    <flux:heading size="sm" class="text-zinc-700 dark:text-zinc-300">Original message</flux:heading>
-                    <p class="mt-2 whitespace-pre-line rounded-lg border border-zinc-200 p-3 text-sm dark:border-zinc-700">{{ $viewingTicket->ticket_message }}</p>
+                    <flux:heading size="sm" class="text-ink/75 dark:text-white/80">Original message</flux:heading>
+                    <p class="mt-2 whitespace-pre-line rounded-lg border border-line p-3 text-sm">{{ $viewingTicket->ticket_message }}</p>
                 </div>
 
                 {{-- AI classification --}}
                 <div>
-                    <flux:heading size="sm" class="text-zinc-700 dark:text-zinc-300">AI classification</flux:heading>
+                    <flux:heading size="sm" class="text-ink/75 dark:text-white/80">AI classification</flux:heading>
                     @if ($viewingTicket->isClassified())
                         <div class="mt-2 space-y-2">
                             <div class="flex flex-wrap items-center gap-2">
-                                <flux:badge :color="match ($viewingTicket->ticket_category) { 'billing' => 'cyan', 'technical' => 'amber', 'complaint' => 'red', default => null }">
+                                <flux:badge :color="match ($viewingTicket->ticket_category) { 'billing' => 'teal', 'technical' => 'amber', 'complaint' => 'red', default => null }">
                                     {{ ucfirst($viewingTicket->ticket_category) }}
                                 </flux:badge>
                                 <flux:badge :color="match ($viewingTicket->urgency_level) { 'high' => 'red', 'medium' => 'amber', 'low' => 'green', default => null }">
@@ -638,41 +644,42 @@ new class extends Component {
                     @elseif ($viewingTicket->isClassificationPending())
                         <div class="mt-2 flex items-center gap-2">
                             <flux:icon.arrow-path variant="micro" class="size-4 animate-spin text-amber-600 dark:text-amber-400" />
-                            <flux:text class="text-sm text-zinc-600 dark:text-zinc-400">Classification is in progress&hellip;</flux:text>
+                            <flux:text class="text-sm text-muted">Classification is in progress&hellip;</flux:text>
                         </div>
                     @elseif (! $viewingTicket->trashed())
                         <div class="mt-2 flex flex-wrap items-center justify-between gap-2">
-                            <flux:text class="text-sm text-zinc-500 dark:text-zinc-400">This ticket has not been classified yet.</flux:text>
+                            <flux:text class="text-sm text-muted">This ticket has not been classified yet.</flux:text>
                             <flux:button wire:click="retryClassification({{ $viewingTicket->id }})" size="sm"
                                 variant="outline" icon="arrow-path" :disabled="$processingTicketId !== null">
                                 Retry classification
                             </flux:button>
                         </div>
                     @else
-                        <flux:text class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">This ticket is in the trash and has not been classified.</flux:text>
+                        <flux:text class="mt-2 text-sm text-muted">This ticket is in the trash and has not been classified.</flux:text>
                     @endif
                 </div>
 
                 {{-- Timestamps --}}
                 <dl class="grid gap-2 text-sm sm:grid-cols-3">
                     <div>
-                        <dt class="text-xs text-zinc-500 dark:text-zinc-400">Created</dt>
+                        <dt class="text-xs text-muted">Created</dt>
                         <dd class="font-medium">{{ $viewingTicket->created_at->format('M j, Y H:i') }}</dd>
                     </div>
                     <div>
-                        <dt class="text-xs text-zinc-500 dark:text-zinc-400">Classified</dt>
+                        <dt class="text-xs text-muted">Classified</dt>
                         <dd class="font-medium">{{ $viewingTicket->classified_at?->format('M j, Y H:i') ?? 'Not classified' }}</dd>
                     </div>
                     <div>
-                        <dt class="text-xs text-zinc-500 dark:text-zinc-400">Closed</dt>
+                        <dt class="text-xs text-muted">Closed</dt>
                         <dd class="font-medium">{{ $viewingTicket->closed_at?->format('M j, Y H:i') ?? '—' }}</dd>
                     </div>
                 </dl>
             </div>
 
-            <div class="flex justify-end gap-3 border-t border-zinc-200 pt-4 dark:border-zinc-700">
+            <div class="flex justify-end gap-3 border-t border-line pt-4">
                 @if ($viewingTicket->trashed())
-                    <flux:button wire:click="restoreTicket({{ $viewingTicket->id }})" variant="filled"
+                    {{-- Restoring is a positive action, so it uses the green primary style. --}}
+                    <flux:button wire:click="restoreTicket({{ $viewingTicket->id }})" variant="primary"
                         icon="arrow-uturn-left">
                         Restore ticket
                     </flux:button>
@@ -719,8 +726,9 @@ new class extends Component {
                         <flux:button variant="ghost">Cancel</flux:button>
                     </flux:modal.close>
 
+                    {{-- Red for the destructive close, green for reopening. --}}
                     <flux:button wire:click="confirmStatusChange" variant="filled"
-                        :color="$isClosing ? 'red' : 'green'">
+                        :color="$isClosing ? 'red' : 'teal'">
                         {{ $isClosing ? 'Close ticket' : 'Reopen ticket' }}
                     </flux:button>
                 </div>

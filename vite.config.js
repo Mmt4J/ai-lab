@@ -16,6 +16,10 @@ export default defineConfig({
                 bunny('Instrument Sans', {
                     weights: [400, 500, 600],
                 }),
+                // Display face used by the AI Lab headings and dashboard cards.
+                bunny('Bricolage Grotesque', {
+                    weights: [500, 600, 700],
+                }),
             ],
         }),
         tailwindcss(),

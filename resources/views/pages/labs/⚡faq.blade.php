@@ -143,15 +143,12 @@ new class extends Component
 ?>
 
 <div class="mx-auto w-full max-w-6xl space-y-6">
-    <div class="space-y-1">
-        <flux:heading size="xl">FAQ Chatbot</flux:heading>
-        <flux:text class="text-sm text-muted">
-            Ask questions about a small FAQ and the assistant will answer only from it. The whole conversation is sent
-            back with every question, so follow-up questions keep their context.
-        </flux:text>
-    </div>
+    {{-- Shared lab intro keeps the page rhythm consistent. --}}
+    <x-lab-header title="FAQ Chatbot"
+        description="Ask questions about a small FAQ and the assistant will answer only from it. The whole conversation is sent back with every question, so follow-up questions keep their context." />
 
     @if ($errorMessage !== '')
+        {{-- Errors stay inline with the conversation so the user does not lose context. --}}
         <div class="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20"
             role="alert">
             <flux:icon.exclamation-triangle variant="micro" class="mt-0.5 size-5 shrink-0 text-red-500" />
@@ -160,10 +157,11 @@ new class extends Component
     @endif
 
     <div class="grid gap-6 lg:grid-cols-3">
-        <flux:card class="flex flex-col gap-4 lg:col-span-2">
+        {{-- Chat transcript: two-thirds of the width on large screens. --}}
+        <flux:card class="flex flex-col gap-4 border-line! bg-card! lg:col-span-2">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="space-y-1">
-                    <flux:heading size="lg">Chat</flux:heading>
+                    <flux:heading size="lg" class="font-display">Chat</flux:heading>
                     <flux:text class="text-sm text-muted">
                         The assistant remembers this conversation until you start a new one.
                     </flux:text>
@@ -178,14 +176,16 @@ new class extends Component
                 </div>
             </div>
 
-            <div class="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+            {{-- Scrollable transcript. The id is also used by tests and assists accessibility tools. --}}
+            <div class="overflow-hidden rounded-lg border border-line">
                 <div class="flex h-[28rem] flex-col">
                     <div id="faq-chat-messages" class="flex-1 space-y-4 overflow-y-auto p-4" role="log"
                         aria-live="polite" aria-label="Conversation with the FAQ assistant">
                         @if (count($messages) === 0)
                             <div class="flex h-full flex-col items-center justify-center gap-4 text-center">
-                                <div class="rounded-full bg-zinc-100 p-3 dark:bg-zinc-800">
-                                    <flux:icon.chat-bubble-left-right class="size-6 text-zinc-500 dark:text-zinc-400" />
+                                {{-- Empty state uses the green brand tint instead of neutral grey. --}}
+                                <div class="rounded-full bg-brand-50 p-3 text-brand-700 dark:bg-brand-950 dark:text-brand-300">
+                                    <flux:icon.chat-bubble-left-right class="size-6" />
                                 </div>
 
                                 <div class="space-y-1">
@@ -196,10 +196,11 @@ new class extends Component
                                 </div>
 
                                 <div class="flex flex-wrap justify-center gap-2">
+                                    {{-- Suggestions call the same send() path as a typed question. --}}
                                     @foreach (['How long does delivery take?', 'Do you ship internationally?', 'What is your returns policy?'] as $suggestion)
                                         <button type="button" wire:click="ask(@js($suggestion))"
                                             wire:loading.attr="disabled" wire:target="send,ask"
-                                            class="rounded-full border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-100 disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800">
+                                            class="rounded-full border border-line px-3 py-1.5 text-xs font-medium text-ink/75 transition-colors hover:border-brand-300 hover:bg-brand-50 hover:text-brand-800 disabled:opacity-50 dark:text-white/70 dark:hover:border-brand-700 dark:hover:bg-brand-950 dark:hover:text-brand-200">
                                             {{ $suggestion }}
                                         </button>
                                     @endforeach
@@ -208,23 +209,24 @@ new class extends Component
                         @else
                             @foreach ($messages as $index => $message)
                                 @if ($message['role'] === 'user')
+                                    {{-- User turns align right and use the solid brand green. --}}
                                     <div class="flex justify-end" wire:key="message-{{ $index }}">
                                         <div
-                                            class="max-w-[85%] rounded-2xl rounded-br-sm bg-zinc-900 px-4 py-2.5 text-sm text-white dark:bg-zinc-100 dark:text-zinc-900">
+                                            class="max-w-[85%] rounded-2xl rounded-br-sm bg-brand-700 px-4 py-2.5 text-sm text-white dark:bg-brand-500 dark:text-brand-950">
                                             <span class="sr-only">You asked: </span>
                                             <p class="whitespace-pre-line">{{ $message['content'] }}</p>
                                         </div>
                                     </div>
                                 @else
+                                    {{-- Assistant turns align left with a soft paper bubble. --}}
                                     <div class="flex items-start gap-3" wire:key="message-{{ $index }}">
                                         <div
-                                            class="mt-0.5 shrink-0 rounded-full bg-zinc-100 p-2 dark:bg-zinc-800">
-                                            <flux:icon.sparkles variant="micro"
-                                                class="size-4 text-zinc-500 dark:text-zinc-400" />
+                                            class="mt-0.5 shrink-0 rounded-full bg-brand-50 p-2 text-brand-700 dark:bg-brand-950 dark:text-brand-300">
+                                            <flux:icon.sparkles variant="micro" class="size-4" />
                                         </div>
 
                                         <div
-                                            class="max-w-[85%] rounded-2xl rounded-bl-sm bg-zinc-100 px-4 py-2.5 text-sm dark:bg-zinc-800">
+                                            class="max-w-[85%] rounded-2xl rounded-bl-sm border border-line bg-paper px-4 py-2.5 text-sm dark:bg-white/5">
                                             <span class="sr-only">Assistant answered: </span>
                                             <p class="whitespace-pre-line">{{ $message['content'] }}</p>
                                         </div>
@@ -233,13 +235,13 @@ new class extends Component
                             @endforeach
                         @endif
 
+                        {{-- Typing indicator while the Livewire request is in flight. --}}
                         <div wire:loading wire:target="send,ask" class="flex items-start gap-3" role="status"
                             aria-live="polite">
-                            <div class="mt-0.5 shrink-0 rounded-full bg-zinc-100 p-2 dark:bg-zinc-800">
-                                <flux:icon.sparkles variant="micro"
-                                    class="size-4 animate-pulse text-zinc-500 dark:text-zinc-400" />
+                            <div class="mt-0.5 shrink-0 rounded-full bg-brand-50 p-2 text-brand-700 dark:bg-brand-950 dark:text-brand-300">
+                                <flux:icon.sparkles variant="micro" class="size-4 animate-pulse" />
                             </div>
-                            <div class="rounded-2xl rounded-bl-sm bg-zinc-100 px-4 py-2.5 text-sm text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
+                            <div class="rounded-2xl rounded-bl-sm border border-line bg-paper px-4 py-2.5 text-sm text-muted dark:bg-white/5">
                                 Thinking&hellip;
                             </div>
                         </div>
@@ -249,13 +251,14 @@ new class extends Component
                             x-init="$el.parentElement.scrollTop = $el.parentElement.scrollHeight"></div>
                     </div>
 
-                    <div class="border-t border-zinc-200 p-3 dark:border-zinc-700">
+                    <div class="border-t border-line p-3">
                         <form wire:submit="send" class="flex items-center gap-2">
                             <div class="min-w-0 flex-1">
                                 <flux:input wire:model="question" placeholder="Ask a question about the FAQ..."
                                     autocomplete="off" maxlength="2000" aria-label="Your question" />
                             </div>
 
+                            {{-- Primary send button picks up the green accent. --}}
                             <flux:button type="submit" variant="primary" icon-trailing="paper-airplane"
                                 wire:loading.attr="disabled" wire:target="send,ask">
                                 <span wire:loading.remove wire:target="send,ask">Send</span>
@@ -272,14 +275,16 @@ new class extends Component
             </flux:text>
         </flux:card>
 
-        <flux:card class="space-y-4">
+        {{-- FAQ editor: one-third of the width on large screens. --}}
+        <flux:card class="space-y-4 border-line! bg-card!">
             <div class="space-y-1">
-                <flux:heading size="lg">FAQ knowledge base</flux:heading>
+                <flux:heading size="lg" class="font-display">FAQ knowledge base</flux:heading>
                 <flux:text class="text-sm text-muted">
                     Paste your own questions and answers here. The whole list is sent as context with every reply.
                 </flux:text>
             </div>
 
+            {{-- The whole textarea is sent as the FAQ context on the next question. --}}
             <flux:textarea wire:model="faq" rows="16" maxlength="12000" aria-label="FAQ knowledge base"
                 placeholder="Q: How long does delivery take?&#10;A: Orders arrive in 3-5 working days." />
 

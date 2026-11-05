@@ -1,62 +1,80 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+{{-- The app is light-first to match the original prototype. Flux still stores
+     the user's light/dark/system choice and applies the `dark` class itself. --}}
 
 <head>
     @include('partials.head')
 </head>
 
-<body class="min-h-screen bg-white dark:bg-zinc-800">
+{{-- Paper canvas + ink text come from the tokens in resources/css/app.css. --}}
+<body class="min-h-screen bg-paper text-ink">
     <flux:sidebar sticky collapsible="mobile"
-        class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+        class="border-e border-line bg-card dark:border-line dark:bg-card">
         <flux:sidebar.header>
-            <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
+            {{-- "AI Lab" is passed explicitly so the brand reads nicely even though
+                 APP_NAME in .env uses an underscore. --}}
+            <x-app-logo :sidebar="true" name="AI Lab" href="{{ route('dashboard') }}" wire:navigate />
             <flux:sidebar.collapse class="lg:hidden" />
         </flux:sidebar.header>
 
+        {{-- Short descriptor from the prototype, kept outside the flex header
+             so it always sits on its own line under the brand. --}}
+        <p class="-mt-1 mb-3 px-2 text-xs text-ink/55 dark:text-white/50">
+            Six small builds, one skill each.
+        </p>
+
         <flux:sidebar.nav>
-            {{-- <flux:sidebar.group :heading="__('Platform')" class="grid">
-                <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
-                    wire:navigate>
-                    {{ __('Dashboard') }}
-                </flux:sidebar.item>
-            </flux:sidebar.group> --}}
             <flux:navlist.group heading="AI Lab">
-                <flux:navlist.item icon="document-text" :href="route('labs.summarizer')"
-                    :current="request()->routeIs('labs.summarizer')" wire:navigate>Summarizer</flux:navlist.item>
-                <flux:navlist.item icon="inbox" :href="route('labs.tickets')"
-                    :current="request()->routeIs('labs.tickets')" wire:navigate>Tickets</flux:navlist.item>
-                <flux:navlist.item icon="shopping-cart" :href="route('labs.product')"
-                    :current="request()->routeIs('labs.product')" wire:navigate>Description Generator
-                </flux:navlist.item>
-                <flux:navlist.item icon="question-mark-circle" :href="route('labs.faq')"
-                    :current="request()->routeIs('labs.faq')" wire:navigate>FAQ</flux:navlist.item>
-                <flux:navlist.item icon="receipt-percent" :href="route('labs.receipt')"
-                    :current="request()->routeIs('labs.receipt')" wire:navigate>Receipt Reader</flux:navlist.item>
-                <flux:navlist.item icon="star" :href="route('labs.reviews')"
-                    :current="request()->routeIs('labs.reviews')" wire:navigate>Reviews</flux:navlist.item>
+                {{-- Each link uses the shared green active state from lab-nav-item. --}}
+                <x-lab-nav-item icon="squares-2x2" :href="route('dashboard')"
+                    :current="request()->routeIs('dashboard')" wire:navigate>
+                    Dashboard
+                </x-lab-nav-item>
+
+                <x-lab-nav-item icon="document-text" :href="route('labs.summarizer')"
+                    :current="request()->routeIs('labs.summarizer')" wire:navigate>
+                    Summarizer
+                </x-lab-nav-item>
+
+                <x-lab-nav-item icon="inbox" :href="route('labs.tickets')"
+                    :current="request()->routeIs('labs.tickets')" wire:navigate>
+                    Ticket classifier
+                </x-lab-nav-item>
+
+                <x-lab-nav-item icon="shopping-bag" :href="route('labs.product')"
+                    :current="request()->routeIs('labs.product')" wire:navigate>
+                    Product writer
+                </x-lab-nav-item>
+
+                <x-lab-nav-item icon="chat-bubble-left-right" :href="route('labs.faq')"
+                    :current="request()->routeIs('labs.faq')" wire:navigate>
+                    FAQ chatbot
+                </x-lab-nav-item>
+
+                <x-lab-nav-item icon="receipt-percent" :href="route('labs.receipt')"
+                    :current="request()->routeIs('labs.receipt')" wire:navigate>
+                    Receipt reader
+                </x-lab-nav-item>
+
+                <x-lab-nav-item icon="star" :href="route('labs.reviews')"
+                    :current="request()->routeIs('labs.reviews')" wire:navigate>
+                    Sentiment tagger
+                </x-lab-nav-item>
             </flux:navlist.group>
         </flux:sidebar.nav>
 
         <flux:spacer />
 
-        <flux:sidebar.nav>
-            <flux:sidebar.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit"
-                target="_blank">
-                {{ __('Repository') }}
-            </flux:sidebar.item>
-
-            <flux:sidebar.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire"
-                target="_blank">
-                {{ __('Documentation') }}
-            </flux:sidebar.item>
-        </flux:sidebar.nav>
-
+        {{-- Account menu stays pinned to the bottom on desktop. --}}
         <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
     </flux:sidebar>
 
-    <!-- Mobile User Menu -->
-    <flux:header class="lg:hidden">
+    <!-- Mobile header: same brand, plus a compact profile menu. -->
+    <flux:header class="border-b border-line bg-card/90 backdrop-blur lg:hidden dark:bg-card">
         <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
+
+        <x-app-logo name="AI Lab" href="{{ route('dashboard') }}" wire:navigate />
 
         <flux:spacer />
 
@@ -87,6 +105,21 @@
 
                 <flux:menu.separator />
 
+                {{-- Appearance switch for mobile, matching the desktop menu. --}}
+                <div class="px-1 pb-1 pt-2">
+                    <p class="mb-2 px-1 text-xs font-medium uppercase tracking-wide text-ink/50 dark:text-white/40">
+                        {{ __('Appearance') }}
+                    </p>
+
+                    <flux:radio.group x-data variant="segmented" size="sm" x-model="$flux.appearance">
+                        <flux:radio value="light" icon="sun" />
+                        <flux:radio value="dark" icon="moon" />
+                        <flux:radio value="system" icon="computer-desktop" />
+                    </flux:radio.group>
+                </div>
+
+                <flux:menu.separator />
+
                 <form method="POST" action="{{ route('logout') }}" class="w-full">
                     @csrf
                     <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle"
@@ -100,13 +133,14 @@
 
     {{ $slot }}
 
+    {{-- Toast host for Livewire events dispatched from the lab components. --}}
     @persist('toast')
         <flux:toast.group>
             <flux:toast />
         </flux:toast.group>
     @endpersist
 
-    {{-- Flash error messages (from exceptions) --}}
+    {{-- Flash error messages (from exceptions). --}}
     @if (session('error'))
         <flux:toast.group>
             <flux:toast variant="danger" :dismissible="true" :persist="true">
@@ -115,7 +149,7 @@
         </flux:toast.group>
     @endif
 
-    {{-- Flash success messages --}}
+    {{-- Flash success messages. --}}
     @if (session('success'))
         <flux:toast.group>
             <flux:toast variant="success" :dismissible="true">

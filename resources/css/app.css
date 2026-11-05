@@ -11,6 +11,40 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
+    /*
+     * Display face used by page titles and lab cards.
+     * Bricolage Grotesque is loaded through the Vite font manifest
+     * (see vite.config.js) so it is bundled instead of pulled from a CDN.
+     */
+    --font-display: 'Bricolage Grotesque', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+
+    /*
+     * Brand palette. These are Tailwind's teal steps, with brand-700
+     * (#0f766e) matching the green used in the original AI Lab prototype.
+     * Every Flux "primary" control reads the accent tokens below, so one
+     * change here themes buttons, links, focus rings, and sidebar states.
+     */
+    --color-brand-50: #f0fdfa;
+    --color-brand-100: #ccfbf1;
+    --color-brand-200: #99f6e4;
+    --color-brand-300: #5eead4;
+    --color-brand-400: #2dd4bf;
+    --color-brand-500: #14b8a6;
+    --color-brand-600: #0d9488;
+    --color-brand-700: #0f766e;
+    --color-brand-800: #115e59;
+    --color-brand-900: #134e4a;
+    --color-brand-950: #042f2e;
+
+    /*
+     * Prototype surface colors. Components use bg-paper/bg-card, border-line,
+     * and text-ink so the whole lab shares one light, paper-like canvas.
+     */
+    --color-paper: #eef1ed;
+    --color-card: #fbfcfa;
+    --color-line: #d5dbd4;
+    --color-ink: #1c2421;
+
     --color-zinc-50: #fafafa;
     --color-zinc-100: #f5f5f5;
     --color-zinc-200: #e5e5e5;
@@ -23,20 +57,45 @@
     --color-zinc-900: #171717;
     --color-zinc-950: #0a0a0a;
 
-    --color-accent: var(--color-neutral-800);
-    --color-accent-content: var(--color-neutral-800);
+    /*
+     * Flux accent tokens. Anything with variant="primary" or no explicit
+     * color picks these up, which is why the whole UI turns green from here.
+     */
+    --color-accent: var(--color-brand-700);
+    --color-accent-content: var(--color-brand-700);
     --color-accent-foreground: var(--color-white);
 }
 
 @layer theme {
+    /*
+     * Dark mode keeps the same green identity but lifts the accent so it
+     * still has contrast against the darker card surfaces.
+     */
     .dark {
-        --color-accent: var(--color-white);
-        --color-accent-content: var(--color-white);
-        --color-accent-foreground: var(--color-neutral-800);
+        --color-paper: #0e1413;
+        --color-card: #151d1b;
+        --color-line: #2a3531;
+        --color-ink: #e8efea;
+
+        --color-accent: var(--color-brand-500);
+        --color-accent-content: var(--color-brand-300);
+        --color-accent-foreground: var(--color-brand-950);
     }
 }
 
 @layer base {
+
+    /*
+     * The default canvas for every authenticated page. The paper tone is
+     * intentionally slightly green-grey so white cards feel like paper.
+     */
+    body {
+        @apply bg-paper text-ink antialiased;
+    }
+
+    ::selection {
+        @apply bg-brand-200 text-brand-950;
+    }
 
     *,
     ::after,

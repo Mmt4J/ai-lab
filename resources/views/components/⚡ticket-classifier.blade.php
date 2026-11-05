@@ -185,9 +185,10 @@ new class extends Component {
 ?>
 
 <div class="space-y-6" @if ($pendingTicketId !== null) wire:poll.3s="refreshPending" @endif>
-    <flux:card class="space-y-4">
+    {{-- Submission form. The card uses the shared paper/card tokens. --}}
+    <flux:card class="space-y-4 border-line! bg-card!">
         <div class="space-y-1">
-            <flux:heading size="lg">Submit a Support Ticket</flux:heading>
+            <flux:heading size="lg" class="font-display">Submit a support ticket</flux:heading>
             <flux:text class="text-sm text-muted">
                 Enter the customer's details and ticket content. The ticket is saved first, then classified by the AI
                 into a category and urgency level with a short summary.
@@ -208,7 +209,8 @@ new class extends Component {
                 placeholder="Describe the customer's issue and requested resolution..." required />
 
             <div class="flex flex-wrap gap-3">
-                <flux:button type="submit" variant="filled" color="blue" :disabled="$processing" class="data-loading:opacity-50">
+                {{-- Primary (green) submit button. --}}
+                <flux:button type="submit" variant="primary" :disabled="$processing" class="data-loading:opacity-50">
                     @if ($processing)
                         <flux:icon.arrow-path variant="micro" class="animate-spin" />
                         Submitting ticket...
@@ -271,8 +273,10 @@ new class extends Component {
     {{-- Classification results --}}
     @if ($ticket !== null)
         @php
+            // Billing uses the brand teal so the main category matches the
+            // rest of the UI; technical/complaint keep their warning colours.
             $categoryColor = match ($ticket->ticket_category) {
-                'billing' => 'cyan',
+                'billing' => 'teal',
                 'technical' => 'amber',
                 'complaint' => 'red',
                 default => null,
@@ -285,9 +289,9 @@ new class extends Component {
             };
         @endphp
 
-        <flux:card class="space-y-4" data-test="classification-result">
+        <flux:card class="space-y-4 border-line! bg-card!" data-test="classification-result">
             <div class="flex flex-wrap items-center justify-between gap-2">
-                <flux:heading size="lg">Classification Result</flux:heading>
+                <flux:heading size="lg" class="font-display">Classification result</flux:heading>
                 <flux:badge>Ticket #{{ $ticket->id }}</flux:badge>
             </div>
 
@@ -299,30 +303,31 @@ new class extends Component {
 
             <div class="grid gap-4 sm:grid-cols-2">
                 <div>
-                    <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Customer</flux:text>
+                    <flux:text class="text-xs text-muted">Customer</flux:text>
                     <p class="font-medium">{{ $ticket->customer_name ?: 'Not provided' }}</p>
                 </div>
                 <div>
-                    <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Company</flux:text>
+                    <flux:text class="text-xs text-muted">Company</flux:text>
                     <p class="font-medium">{{ $ticket->company_name ?: 'Not provided' }}</p>
                 </div>
                 <div class="sm:col-span-2">
-                    <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">Subject</flux:text>
+                    <flux:text class="text-xs text-muted">Subject</flux:text>
                     <p class="font-medium">{{ $ticket->ticket_subject }}</p>
                 </div>
             </div>
 
-            <div class="rounded-lg bg-zinc-50 p-4 dark:bg-zinc-800/50">
-                <flux:text class="text-xs text-zinc-500 dark:text-zinc-400">AI summary</flux:text>
+            {{-- AI summary sits on the paper tint so it reads as supporting detail. --}}
+            <div class="rounded-lg bg-paper p-4 dark:bg-white/5">
+                <flux:text class="text-xs text-muted">AI summary</flux:text>
                 <p class="mt-1 text-sm">{{ $ticket->ai_summary }}</p>
             </div>
 
-            <div class="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
+            <div class="flex items-center gap-2 text-xs text-muted">
                 <flux:icon.clock variant="micro" class="size-4" />
                 Classified {{ $ticket->classified_at?->diffForHumans() ?? '—' }}
             </div>
 
-            <div class="flex flex-wrap gap-3 border-t border-zinc-200 pt-4 dark:border-zinc-700">
+            <div class="flex flex-wrap gap-3 border-t border-line pt-4">
                 <flux:button wire:click="viewDetails" variant="outline">
                     View ticket details
                 </flux:button>
